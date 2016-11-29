@@ -1,10 +1,8 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.configuration;
 
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.context.support.XmlWebApplicationContext;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 import org.springframework.web.servlet.support.AbstractDispatcherServletInitializer;
 
 public class MicroPassManagerInitializer extends AbstractDispatcherServletInitializer {
@@ -19,7 +17,7 @@ public class MicroPassManagerInitializer extends AbstractDispatcherServletInitia
   protected WebApplicationContext createRootApplicationContext() {
     
       XmlWebApplicationContext rootAppContext = new XmlWebApplicationContext();
-      rootAppContext.setConfigLocation("WEB-INF/context/spring-app.xml");
+      rootAppContext.setConfigLocation("WEB-INF/resources/spring/spring-app.xml");      
       return rootAppContext;    
   }
 

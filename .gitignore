@@ -1,1 +1,6 @@
 bin/
+war/WEB-INF/classes/
+test-output/
+war/WEB-INF/lib/
+war/WEB-INF/resources/spring/
+output/

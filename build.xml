@@ -10,6 +10,7 @@
 	<property name="resources.dir" value="resources"/>
   <property name="web.dir" value="war"/>
   <property name="build.classes.dir" value="${web.dir}/WEB-INF/classes"/>
+  <property name="build.resources.dir" value="${web.dir}/WEB-INF/resources"/>
   <property name="build.lib.dir" value="${web.dir}/WEB-INF/lib"/>  
 	<property name="java.src.version" value="1.8"/>
 	<property name="java.tgt.version" value="1.8"/>
@@ -26,6 +27,7 @@
       <include name="servlet*.jar"/>
     </fileset>
     <pathelement path="${build.classes.dir}"/>
+    <pathelement path="${build.resources.dir}"/>
   </path>
 	
 	<path id="test-classpath">
@@ -36,7 +38,7 @@
 	    <fileset dir="${tomcat.lib.dir}">
 	      <include name="servlet*.jar"/>
 	    </fileset>
-		  <pathelement path="${resources.dir}/test"/>
+		  <pathelement path="${resources.dir}/spring"/>
 	    <pathelement path="${build.classes.dir}"/>
 	</path>
 	
@@ -61,9 +63,8 @@
   	<echo message="rebuild       --> Clean and build the application"/>
   	<echo message="tests-build   --> Build tests"/>
   	<echo message="tests-run     --> Run tests with ant"/>
-  	<!-- echo message="deploy-dir  Deploy application in directory"/-->
-  	<echo message="deploy-war    --> Deploy application as a WAR file"/>
-  	<echo message="undeploy      --> Undeploy application from Tomcat"/>
+  	<echo message="tests-debug     --> Debug tests"/>
+  	<echo message="create-war    --> Deploy application as a WAR file"/>  	
   	<echo message=" * Tomcat built-in targets * "/>
   	<echo message="tomcat-deploy --> Start Tomcat server"/>
     <echo message="tomcat-start  --> Start Tomcat server"/>  	
@@ -71,9 +72,13 @@
     <echo message="tomcat-stop   --> Stop Tomcat server"/>
     <echo message="tomcat-list   --> List Tomcat applications"/>
   	<echo message=" * Other targets * "/>
-  	<echo message="tomcat-debug  --> Start Tomcat server in debug mode"/>  	
+    <echo message="tomcat-undeploy      --> Undeploy application from Tomcat"/>
+  
   </target>
 
+	<target name="all-prod" depends="rebuild,tomcat-deploy,tomcat-start" description="rebuild,tests-run,tomcat-deploy,tomcat-list"/>
+	<target name="all-dev" depends="rebuild,tests-run,tomcat-deploy,tomcat-list,tomcat-start" description="rebuild,tests-run,tomcat-deploy,tomcat-list"/>
+	
   <target name="clean" description="Clean output directories">
     <delete >
       <fileset dir="${build.classes.dir}">
@@ -97,7 +102,7 @@
     	  <include name="**/*.jar"/>
     	</fileset>
     </copy>
-    <copy todir="${build.classes.dir}" preservelastmodified="true">
+    <copy todir="${build.resources.dir}" preservelastmodified="true">
       <fileset dir="${resources.dir}">
     	  <include name="**/*.*"/>
       </fileset>
@@ -142,55 +147,26 @@
 	    </testng>
   </target>
 
-  <target name="deploy-war" depends="build" description="Deploy application as a WAR file">
+  <target name="create-war" depends="build" description="Deploy application as a WAR file">
   	<mkdir dir="output"/>
   	<delete>
   	  <fileset dir="output">
   	    <include name="**/*.*"/>
   	  </fileset>
   	</delete>
-    <war destfile="output/${name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+    <war destfile="output/${name}.war" needxmlfile="false" >
       <fileset dir="${web.dir}">
         <include name="**/*.*"/>
       </fileset>
     </war>
-    <copy todir="${tomcat.deploy.dir}" preservelastmodified="true">
-      <fileset dir="output">
-        <include name="*.war"/>
-      </fileset>
-    </copy>
   </target>
   
-	<target name="redeploy" depends="undeploy,tomcat-deploy" description="Un-Deploy application">   
-	    <delete>    
-	      <fileset dir="${tomcat.deploy.dir}/${name}">
-	        <include name="**/*"/>
-	      </fileset>      
-	      <fileset dir="${tomcat.deploy.dir}">
-	        <include name="${name}.war"/>
-	      </fileset>      
-	      <dirset dir="${tomcat.deploy.dir}/${name}"/>
-	    </delete>
-	  </target>
-	  
-	
-	<target name="undeploy" description="Un-Deploy application">		
-	  <delete>	  
-	    <fileset dir="${tomcat.deploy.dir}/${name}">
-	      <include name="**/*"/>
-	    </fileset>	  	
-	  	<fileset dir="${tomcat.deploy.dir}">
-	      <include name="${name}.war"/>
-	  	</fileset>	  	
-	  	<dirset dir="${tomcat.deploy.dir}/${name}"/>
-	  </delete>
-	</target>
-	
+
   <!-- ============================================================== -->
   <!-- Tomcat tasks - remove these if you don't have Tomcat installed -->
   <!-- ============================================================== -->
 	
-  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+  <taskdef name="tomcat-deploy" classname="org.apache.catalina.ant.DeployTask">
     <classpath refid="catalina-ant-classpath"/>
   </taskdef>
   <taskdef name="tomcat-reload" classname="org.apache.catalina.ant.ReloadTask">
@@ -206,8 +182,13 @@
     <classpath refid="catalina-ant-classpath"/>
   </taskdef>
   
-	<target name="tomcat-deploy" depends="deploy-war" description="Deploy application in Tomcat 8">
-    <deploy url="${tomcat.manager.url}" username="${tomcat.manager.username}" 
+	<target name="tomcat-deploy" depends="create-war" description="Deploy application in Tomcat 8">
+    <copy todir="${tomcat.deploy.dir}" preservelastmodified="true">
+      <fileset dir="output">
+        <include name="*.war"/>
+      </fileset>
+    </copy>
+    <tomcat-deploy url="${tomcat.manager.url}" username="${tomcat.manager.username}" 
     	password="${tomcat.manager.password}" path="/${name}" war="output/${name}.war"/>
   </target>
   
@@ -230,7 +211,19 @@
     <tomcat-list url="${tomcat.manager.url}" username="${tomcat.manager.username}" 
     	    password="${tomcat.manager.password}"/>
   </target>
-
+	
+  <target name="tomcat-undeploy" depends="tomcat-stop" description="Un-Deploy application">   
+    <delete>    
+      <fileset dir="${tomcat.deploy.dir}/${name}">
+        <include name="**/*"/>
+      </fileset>      
+      <fileset dir="${tomcat.deploy.dir}">
+        <include name="${name}.war"/>
+      </fileset>      
+      <dirset dir="${tomcat.deploy.dir}/${name}"/>
+    </delete>
+  </target>
+  
 
 <!-- End Tomcat tasks -->
 </project>

@@ -12,12 +12,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-
+import eu.pawelniewiadomski.java.spring.micropassmanager.data.Constants;
 import eu.pawelniewiadomski.java.spring.micropassmanager.data.PasswordData;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassManagerService;
 
@@ -31,6 +28,7 @@ import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassManagerSer
 public class PasswordController {
 
   protected static final Log LOG = LogFactory.getLog(PasswordController.class);
+
   
   @Autowired
   PassManagerService passManagerService;
@@ -38,36 +36,44 @@ public class PasswordController {
   
   @PostMapping(value = { "/" }, consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
   public @ResponseBody String addPassword(@RequestBody PasswordData password) {    
-    passManagerService.addPasswordForKey(passwordData);
+    passManagerService.addPassword(password);
     return "{'result' : 'ok'}";
   }
   
   @GetMapping(value = { "/user/{user}/key/{key}" })
-  public @ResponseBody String getPasswordByKey(@PathVariable PasswordData password) {    
+  public @ResponseBody String getPasswordByKey(@PathVariable PasswordData passwordData) {    
     
-    PassManagerService defaultFamily = passManagerService.findPasswordByKey(null);
-    return "{ok}";
+    PasswordData password = passManagerService.findPassword(passwordData);
+    return "{'result' : 'ok', 'data' : { 'password' : '"+ password +"'}";
   }
   
   @PutMapping(value = { "/{key}" })
-  public @ResponseBody String updatePasswordByKey(@PathVariable String key, String password) {    
-    
-    PassManagerService defaultFamily = passManagerService.updatePasswordForKey(key, password);
-    return "{ok}";
+  public @ResponseBody String updatePasswordByKey(@PathVariable String key, PasswordData password) {    
+    PasswordData props = new PasswordData();
+    props.put(Constants.KEY, key);
+    props.put(Constants.USER, password.getUser());
+    props.put(Constants.LOGIN, password.getLogin());
+    props.put(Constants.PASSWORD, password.getPassword());
+    passManagerService.updatePassword(props);
+    return  "{'result' : 'ok'}";
   }
   
   @DeleteMapping(value = { "/{key}" })
-  public @ResponseBody String deletePasswordByKey(@PathVariable String key) {
-    boolean deleted = false; 
+  public @ResponseBody String deletePasswordByKey(@PathVariable String key) { 
     try {
-     passManagerService.deletePasswordForKey(key);
-    } catch (NullPointerException ex){
-      return "{'result' : null, 'exception': 'true', 'data' : '" +ex.getMessage();
+      PasswordData props = new PasswordData();
+     props.put(Constants.KEY, key);
+     passManagerService.deletePassword(props);     
+     return "{ 'result': 'ok'}";
+    } catch (Exception ex){
+      return handleException(ex);
     }
-    return "{ result: }";
   }
   
-  
+
+  private String handleException(Exception ex){
+    return "{'result' : null, 'exception': 'true', 'data' : '" +ex.getMessage();
+  }
   
 
 }

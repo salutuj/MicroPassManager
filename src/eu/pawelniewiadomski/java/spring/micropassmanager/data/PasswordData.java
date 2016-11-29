@@ -1,14 +1,19 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.data;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.HashMap;
 
-public class PasswordData implements Map<String, String>{
+public class PasswordData extends HashMap<String, String>{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -4671030661426781913L;
+  
+  
   String user;
-  String serviceId;
+  String key;
+  String login;
   String password;
-
+  
   public String getUser() {
     return user;
   }
@@ -17,12 +22,20 @@ public class PasswordData implements Map<String, String>{
     this.user = user;
   }
 
-  public String getServiceId() {
-    return serviceId;
+  public String getKey() {
+    return key;
   }
 
-  public void setServiceId(String serviceId) {
-    this.serviceId = serviceId;
+  public void setKey(String key) {
+    this.key = key;
+  }
+  
+  public String getLogin() {
+    return login;
+  }
+  
+  public void setLogin(String login) {
+    this.login = login;
   }
 
   public String getPassword() {
@@ -33,75 +46,5 @@ public class PasswordData implements Map<String, String>{
     this.password = password;
   }
 
-  @Override
-  public int size() {
-    // TODO Auto-generated method stub
-    return 0;
-  }
 
-  @Override
-  public boolean isEmpty() {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean containsKey(Object key) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public boolean containsValue(Object value) {
-    // TODO Auto-generated method stub
-    return false;
-  }
-
-  @Override
-  public String get(Object key) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public String put(String key, String value) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public String remove(Object key) {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public void putAll(Map<? extends String, ? extends String> m) {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public void clear() {
-    // TODO Auto-generated method stub
-    
-  }
-
-  @Override
-  public Set<String> keySet() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Collection<String> values() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
-  @Override
-  public Set<java.util.Map.Entry<String, String>> entrySet() {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }

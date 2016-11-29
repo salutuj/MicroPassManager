@@ -1,12 +1,14 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.services.impl;
 
 import java.io.IOException;
+import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
+import eu.pawelniewiadomski.java.spring.micropassmanager.data.Constants;
 import eu.pawelniewiadomski.java.spring.micropassmanager.data.PasswordData;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.CryptoService;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassManagerService;
@@ -23,12 +25,12 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void addPassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.getUser())) {
+    if (verifyUser(passwordData.get(Constants.USER))) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
         encryptedPassword.setUser(passwordData.getUser());
-        encryptedPassword.setServiceId(passwordData.getServiceId());
+        encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
 
@@ -41,7 +43,7 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public PasswordData findPassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.getUser())) {
+    if (verifyUser(passwordData.get(Constants.USER))) {
       try {
         PasswordData readPassword = storageService.readPassword(passwordData);
         if ( readPassword != null)       
@@ -57,12 +59,12 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void updatePassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.getUser())) {
+    if (verifyUser(passwordData.get(Constants.USER))) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
         encryptedPassword.setUser(passwordData.getUser());
-        encryptedPassword.setServiceId(passwordData.getServiceId());
+        encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
 
@@ -75,12 +77,12 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void deletePassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.getUser())) {
+    if (verifyUser(passwordData.get(Constants.USER))) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
         encryptedPassword.setUser(passwordData.getUser());
-        encryptedPassword.setServiceId(passwordData.getServiceId());
+        encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
 
@@ -93,7 +95,7 @@ public class DefaultPassManagerService implements PassManagerService {
 
   private String makeCipherKey(PasswordData passwordData) {
     User user = sessionService.getCurrentSession().getSessionUser();
-    return user.getId() + user.getMasterPassword() + passwordData.getServiceId();
+    return user.getId() + user.getMasterPassword() + passwordData.getKey();
   }
 
   private boolean verifyUser(String userId) {
