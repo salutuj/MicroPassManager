@@ -1,0 +1,237 @@
+<?xml version="1.0"?>
+
+<project name="MicroPassManager" basedir="." default="usage">
+	<property file="build.properties"/>
+	<property name="name" value="MicroPassManager"/>	
+  <property name="src.dir" value="src"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="gensrc.dir" value="gensrc"/>
+	<property name="test.dir" value="testsrc"/>
+	<property name="resources.dir" value="resources"/>
+  <property name="web.dir" value="war"/>
+  <property name="build.classes.dir" value="${web.dir}/WEB-INF/classes"/>
+  <property name="build.lib.dir" value="${web.dir}/WEB-INF/lib"/>  
+	<property name="java.src.version" value="1.8"/>
+	<property name="java.tgt.version" value="1.8"/>
+	
+  <path id="master-classpath">
+    <fileset dir="${web.dir}/WEB-INF/lib">
+      <include name="*.jar"/>
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="*.jar"/>
+    </fileset>
+    <!-- We need the servlet API classes -->        
+    <fileset dir="${tomcat.lib.dir}">
+      <include name="servlet*.jar"/>
+    </fileset>
+    <pathelement path="${build.classes.dir}"/>
+  </path>
+	
+	<path id="test-classpath">
+	    <fileset dir="${lib.dir}">
+	      <include name="*.jar"/>
+	    </fileset>
+	    <!-- We need the servlet API classes -->        
+	    <fileset dir="${tomcat.lib.dir}">
+	      <include name="servlet*.jar"/>
+	    </fileset>
+		  <pathelement path="${resources.dir}/test"/>
+	    <pathelement path="${build.classes.dir}"/>
+	</path>
+	
+  <path id="catalina-ant-classpath">
+    <!-- We need the Catalina jars for Tomcat; * for other app servers - check the docs -->
+    <fileset dir="${tomcat.lib.dir}">
+      <include name="catalina-ant.jar"/>
+      <include name="tomcat-util.jar"/>     
+    </fileset>
+  </path>
+    	
+	<!-- *** taskdefs *** -->
+	<taskdef name="testng" classpathref="test-classpath" classname="org.testng.TestNGAntTask" />
+	
+	<!-- *** targets *** -->
+  <target name="usage">
+    <echo message="${name} build file"/>
+    <echo message="-----------------------------------"/>
+    <echo message="Available targets are:"/>
+  	<echo message="clean         --> Clean"/>
+    <echo message="build         --> Build the application"/>
+  	<echo message="rebuild       --> Clean and build the application"/>
+  	<echo message="tests-build   --> Build tests"/>
+  	<echo message="tests-run     --> Run tests with ant"/>
+  	<!-- echo message="deploy-dir  Deploy application in directory"/-->
+  	<echo message="deploy-war    --> Deploy application as a WAR file"/>
+  	<echo message="undeploy      --> Undeploy application from Tomcat"/>
+  	<echo message=" * Tomcat built-in targets * "/>
+  	<echo message="tomcat-deploy --> Start Tomcat server"/>
+    <echo message="tomcat-start  --> Start Tomcat server"/>  	
+  	<echo message="tomcat-reload --> Reload application in Tomcat"/>
+    <echo message="tomcat-stop   --> Stop Tomcat server"/>
+    <echo message="tomcat-list   --> List Tomcat applications"/>
+  	<echo message=" * Other targets * "/>
+  	<echo message="tomcat-debug  --> Start Tomcat server in debug mode"/>  	
+  </target>
+
+  <target name="clean" description="Clean output directories">
+    <delete >
+      <fileset dir="${build.classes.dir}">
+        <include name="**/*"/>
+      </fileset>
+      <fileset dir="${build.lib.dir}">
+        <include name="**/*"/>
+      </fileset>      
+    </delete>
+  </target>
+      	
+  <target name="build" description="Compile main source tree java files">
+    <mkdir dir="${build.classes.dir}"/>
+    <javac destdir="${build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="true"
+      deprecation="false" optimize="false" failonerror="true">
+      <src path="${src.dir}"/>
+      <classpath refid="master-classpath"/>
+    </javac>
+    <copy todir="${build.lib.dir}" preservelastmodified="true">
+      <fileset dir="${lib.dir}">
+    	  <include name="**/*.jar"/>
+    	</fileset>
+    </copy>
+    <copy todir="${build.classes.dir}" preservelastmodified="true">
+      <fileset dir="${resources.dir}">
+    	  <include name="**/*.*"/>
+      </fileset>
+    </copy>  	
+  </target>
+	
+	<target name="rebuild" depends="clean,build" description="Clean and build"/>
+	
+	<target name="tests-build" description="Compile test tree java files">
+	  <mkdir dir="${build.classes.dir}"/>
+	  <javac destdir="${build.classes.dir}" source="${java.src.version}" target="${java.tgt.version}" debug="true"
+	    deprecation="false" optimize="false" failonerror="true">
+	    <src path="${test.dir}"/>
+	    <classpath refid="test-classpath"/>
+	  </javac>
+	</target>
+	    
+	<target name="tests-run" depends="build, tests-build" description="Run tests">
+		<testng mode="testng" classpathref="test-classpath" 
+			      failureproperty="tests.failed" verbose="1">
+			<classfileset dir="${build.classes.dir}" includes="**/*Test.class"/>
+			<jvmarg value="-Dfile.encoding=UTF-8"/>
+		</testng>
+	  <fail if="tests.failed">
+	            tests.failed=${tests.failed}
+	            ***********************************************************
+	            ***********************************************************
+	            ****  One or more tests failed!  Check the output ...  ****
+	            ***********************************************************
+	            ***********************************************************
+	  </fail>
+	</target>
+	
+  <target name="tests-debug"  depends="build, tests-build" description="Debug tests">
+	    <testng mode="testng" dumpCommand="true" classpathref="test-classpath" 
+	            failureproperty="tests.failed" verbose="2">
+	      <classfileset dir="${build.classes.dir}" includes="**/*Test.class"/>
+	    	<jvmarg value="-Xdebug"/>
+	    	<jvmarg value="-Xnoagent"/> 
+	    	<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8990" />
+	    	<jvmarg value="-Dfile.encoding=UTF-8"/>
+	    </testng>
+  </target>
+
+  <target name="deploy-war" depends="build" description="Deploy application as a WAR file">
+  	<mkdir dir="output"/>
+  	<delete>
+  	  <fileset dir="output">
+  	    <include name="**/*.*"/>
+  	  </fileset>
+  	</delete>
+    <war destfile="output/${name}.war" webxml="${web.dir}/WEB-INF/web.xml">
+      <fileset dir="${web.dir}">
+        <include name="**/*.*"/>
+      </fileset>
+    </war>
+    <copy todir="${tomcat.deploy.dir}" preservelastmodified="true">
+      <fileset dir="output">
+        <include name="*.war"/>
+      </fileset>
+    </copy>
+  </target>
+  
+	<target name="redeploy" depends="undeploy,tomcat-deploy" description="Un-Deploy application">   
+	    <delete>    
+	      <fileset dir="${tomcat.deploy.dir}/${name}">
+	        <include name="**/*"/>
+	      </fileset>      
+	      <fileset dir="${tomcat.deploy.dir}">
+	        <include name="${name}.war"/>
+	      </fileset>      
+	      <dirset dir="${tomcat.deploy.dir}/${name}"/>
+	    </delete>
+	  </target>
+	  
+	
+	<target name="undeploy" description="Un-Deploy application">		
+	  <delete>	  
+	    <fileset dir="${tomcat.deploy.dir}/${name}">
+	      <include name="**/*"/>
+	    </fileset>	  	
+	  	<fileset dir="${tomcat.deploy.dir}">
+	      <include name="${name}.war"/>
+	  	</fileset>	  	
+	  	<dirset dir="${tomcat.deploy.dir}/${name}"/>
+	  </delete>
+	</target>
+	
+  <!-- ============================================================== -->
+  <!-- Tomcat tasks - remove these if you don't have Tomcat installed -->
+  <!-- ============================================================== -->
+	
+  <taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask">
+    <classpath refid="catalina-ant-classpath"/>
+  </taskdef>
+  <taskdef name="tomcat-reload" classname="org.apache.catalina.ant.ReloadTask">
+    <classpath refid="catalina-ant-classpath"/>
+  </taskdef>
+  <taskdef name="tomcat-list" classname="org.apache.catalina.ant.ListTask">
+    <classpath refid="catalina-ant-classpath"/>
+  </taskdef>
+  <taskdef name="tomcat-start" classname="org.apache.catalina.ant.StartTask" >
+    <classpath refid="catalina-ant-classpath"/>
+  </taskdef>
+  <taskdef name="tomcat-stop" classname="org.apache.catalina.ant.StopTask">
+    <classpath refid="catalina-ant-classpath"/>
+  </taskdef>
+  
+	<target name="tomcat-deploy" depends="deploy-war" description="Deploy application in Tomcat 8">
+    <deploy url="${tomcat.manager.url}" username="${tomcat.manager.username}" 
+    	password="${tomcat.manager.password}" path="/${name}" war="output/${name}.war"/>
+  </target>
+  
+	<target name="tomcat-reload" description="Reload application in Tomcat">
+    <tomcat-reload url="${tomcat.manager.url}" username="${tomcat.manager.username}"
+            password="${tomcat.manager.password}" path="/${name}"/>
+  </target>
+  
+	<target name="tomcat-start" description="Start app on Tomcat server">
+    <tomcat-start url="${tomcat.manager.url}" username="${tomcat.manager.username}"
+           password="${tomcat.manager.password}" path="/${name}" />
+  </target>
+  
+	<target name="tomcat-stop" description="Stop app on Tomcat server">
+    <tomcat-stop url="${tomcat.manager.url}" username="${tomcat.manager.username}"
+          password="${tomcat.manager.password}" path="/${name}"/>
+  </target>
+
+  <target name="tomcat-list" description="List Tomcat applications">
+    <tomcat-list url="${tomcat.manager.url}" username="${tomcat.manager.username}" 
+    	    password="${tomcat.manager.password}"/>
+  </target>
+
+
+<!-- End Tomcat tasks -->
+</project>
+
