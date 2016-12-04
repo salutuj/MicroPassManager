@@ -9,12 +9,20 @@
     ">
 	<context:property-placeholder location="classpath:config.properties" />
 
-  <alias alias="defaultCryptoService" name="cryptoService" />
-  <bean id="cryptoService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.AESCBCBase64CryptoService"/>
+  <alias alias="cryptoService" name="defaultCryptoService" />
+  <bean id="defaultCryptoService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.AESCBCBase64CryptoService"/>
   
-	<alias alias="defaultPassManagerService" name="passManagerService" />
-	<bean id="passManagerService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultPassManagerService">
+  <alias alias="sessionService" name="defaultSessionService" />
+  <bean id="defaultSessionService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultSessionService"/>
+  
+  <alias alias="storageService" name="defaultStorageService" />
+  <bean id="defaultStorageService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultPassStorageService"/>
+  
+	<alias alias="passManagerService" name="defaultPassManagerService" />
+	<bean id="defaultPassManagerService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultPassManagerService">
 		<property name="cryptoService" ref="cryptoService" />		
+		<property name="sessionService" ref="sessionService" />
+		<property name="storageService" ref="storageService" />
 	</bean>
 
 

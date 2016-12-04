@@ -9,8 +9,7 @@
 	<property name="test.dir" value="testsrc"/>
 	<property name="resources.dir" value="resources"/>
   <property name="web.dir" value="war"/>
-  <property name="build.classes.dir" value="${web.dir}/WEB-INF/classes"/>
-  <property name="build.resources.dir" value="${web.dir}/WEB-INF/resources"/>
+  <property name="build.classes.dir" value="${web.dir}/WEB-INF/classes"/>  
   <property name="build.lib.dir" value="${web.dir}/WEB-INF/lib"/>  
 	<property name="java.src.version" value="1.8"/>
 	<property name="java.tgt.version" value="1.8"/>
@@ -26,8 +25,7 @@
     <fileset dir="${tomcat.lib.dir}">
       <include name="servlet*.jar"/>
     </fileset>
-    <pathelement path="${build.classes.dir}"/>
-    <pathelement path="${build.resources.dir}"/>
+    <pathelement path="${build.classes.dir}"/>    
   </path>
 	
 	<path id="test-classpath">
@@ -38,7 +36,6 @@
 	    <fileset dir="${tomcat.lib.dir}">
 	      <include name="servlet*.jar"/>
 	    </fileset>
-		  <pathelement path="${resources.dir}/spring"/>
 	    <pathelement path="${build.classes.dir}"/>
 	</path>
 	
@@ -102,7 +99,7 @@
     	  <include name="**/*.jar"/>
     	</fileset>
     </copy>
-    <copy todir="${build.resources.dir}" preservelastmodified="true">
+    <copy todir="${build.classes.dir}" preservelastmodified="true">
       <fileset dir="${resources.dir}">
     	  <include name="**/*.*"/>
       </fileset>
@@ -139,7 +136,7 @@
   <target name="tests-debug"  depends="build, tests-build" description="Debug tests">
 	    <testng mode="testng" dumpCommand="true" classpathref="test-classpath" 
 	            failureproperty="tests.failed" verbose="2">
-	      <classfileset dir="${build.classes.dir}" includes="**/*Test.class"/>
+	      <classfileset dir="${build.classes.dir}" includes="**/*Test.class"/>	    	
 	    	<jvmarg value="-Xdebug"/>
 	    	<jvmarg value="-Xnoagent"/> 
 	    	<jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8990" />

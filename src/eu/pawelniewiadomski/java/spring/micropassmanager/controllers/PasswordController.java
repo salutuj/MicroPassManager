@@ -75,5 +75,8 @@ public class PasswordController {
     return "{'result' : null, 'exception': 'true', 'data' : '" +ex.getMessage();
   }
   
+  public void setPassManagerService(PassManagerService passManagerService) {
+    this.passManagerService = passManagerService;
+  }
 
 }

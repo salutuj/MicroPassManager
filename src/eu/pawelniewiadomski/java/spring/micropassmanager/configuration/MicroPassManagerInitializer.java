@@ -17,7 +17,7 @@ public class MicroPassManagerInitializer extends AbstractDispatcherServletInitia
   protected WebApplicationContext createRootApplicationContext() {
     
       XmlWebApplicationContext rootAppContext = new XmlWebApplicationContext();
-      rootAppContext.setConfigLocation("WEB-INF/resources/spring/spring-app.xml");      
+      rootAppContext.setConfigLocation("WEB-INF/classes/spring/spring-app.xml");      
       return rootAppContext;    
   }
 
@@ -30,7 +30,7 @@ public class MicroPassManagerInitializer extends AbstractDispatcherServletInitia
   @Override
   protected WebApplicationContext createServletApplicationContext() {
     AnnotationConfigWebApplicationContext servletAppContext = new AnnotationConfigWebApplicationContext();
-    servletAppContext.register(MicroPassManagerWebAppConfiguration.class);
+    servletAppContext.register(MicroPassManagerWebAppConfiguration.class);    
     return servletAppContext;
   }
 

@@ -13,13 +13,12 @@
 	<classpathentry kind="lib" path="lib/mockito-all-1.10.19.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-4.3.1.RELEASE.jar" sourcepath="docs/spring-beans-4.3.1.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context-4.3.1.RELEASE.jar" sourcepath="docs/spring-context-4.3.1.RELEASE-sources.jar"/>
-	<classpathentry kind="lib" path="lib/spring-core-4.3.1.RELEASE.jar" sourcepath="docs/spring-core-4.3.1.RELEASE-sources.jar"/>/>
+	<classpathentry kind="lib" path="lib/spring-core-4.3.1.RELEASE.jar" sourcepath="docs/spring-core-4.3.1.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spring-web-4.3.1.RELEASE.jar" sourcepath="docs/spring-web-4.3.1.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spring-webmvc-4.3.1.RELEASE.jar" sourcepath="docs/spring-webmvc-4.3.1.RELEASE-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.9.12.jar"/>
 	<classpathentry kind="lib" path="lib/spring-test-4.3.1.RELEASE.jar"/>
-	<classpathentry kind="lib" path="C:/PROJ/train/tomcat8/apache-tomcat-8.0.29/lib/servlet-api.jar" sourcepath="C:/PROJ/train/tomcat8/apache-tomcat-8.0.29-src.zip"/>
-	<classpathentry kind="lib" path="C:/PROJ/train/tomcat8/apache-tomcat-8.0.29/lib/tomcat-util.jar"/>
+	<classpathentry kind="lib" path="C:/Program Files/Apache Software Foundation/Tomcat 8.5_Tomcat8_Service/lib/servlet-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

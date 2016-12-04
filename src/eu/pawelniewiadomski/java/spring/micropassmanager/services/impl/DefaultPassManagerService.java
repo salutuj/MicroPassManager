@@ -1,7 +1,6 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.services.impl;
 
 import java.io.IOException;
-import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,6 +111,22 @@ public class DefaultPassManagerService implements PassManagerService {
 
   public void setCryptoService(CryptoService cryptoService) {
     this.cryptoService = cryptoService;
+  }
+  
+  public SessionService getSessionService() {
+    return sessionService;
+  }
+  
+  public void setSessionService(SessionService sessionService) {
+    this.sessionService = sessionService;
+  }
+  
+  public PassStorageService getStorageService() {
+    return storageService;
+  }
+  
+  public void setStorageService(PassStorageService storageService) {
+    this.storageService = storageService;
   }
 
 }
