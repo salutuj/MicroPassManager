@@ -1,6 +1,7 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.services.impl;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -41,19 +42,35 @@ public class DefaultPassManagerService implements PassManagerService {
   }
 
   @Override
+  public List<PasswordData> findAllPasswords(PasswordData passwordData) {
+    // if (verifyUser(passwordData.get(Constants.USER))) {
+    try {
+      // PasswordData readPassword = storageService.readPassword(passwordData);
+      // if ( readPassword != null)
+      // readPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData),
+      // passwordData.getPassword()));
+      // return readPassword;
+
+    } catch (DataLengthException | IllegalStateException e) {
+      LOG.error("Exception occured:", e);
+      throw new RuntimeException(e);
+    }
+    return null;
+  } // else throw new RuntimeException("Cannot verify user");
+
+  @Override
   public PasswordData findPassword(PasswordData passwordData) {
     if (verifyUser(passwordData.get(Constants.USER))) {
       try {
         PasswordData readPassword = storageService.readPassword(passwordData);
-        if ( readPassword != null)       
-        readPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
+        if (readPassword != null) readPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         return readPassword;
 
       } catch (DataLengthException | IllegalStateException | InvalidCipherTextException | IOException e) {
         LOG.error("Exception occured:", e);
         throw new RuntimeException(e);
       }
-    } else throw new RuntimeException("Cannot verify user");    
+    } else throw new RuntimeException("Cannot verify user");
   }
 
   @Override
@@ -112,19 +129,19 @@ public class DefaultPassManagerService implements PassManagerService {
   public void setCryptoService(CryptoService cryptoService) {
     this.cryptoService = cryptoService;
   }
-  
+
   public SessionService getSessionService() {
     return sessionService;
   }
-  
+
   public void setSessionService(SessionService sessionService) {
     this.sessionService = sessionService;
   }
-  
+
   public PassStorageService getStorageService() {
     return storageService;
   }
-  
+
   public void setStorageService(PassStorageService storageService) {
     this.storageService = storageService;
   }

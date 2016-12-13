@@ -4,3 +4,5 @@ test-output/
 war/WEB-INF/lib/
 war/WEB-INF/resources/spring/
 output/
+war/lib/angular-1.6.0/docs/
+war/lib/angular-1.6.0/i18n/angular-locale*.js

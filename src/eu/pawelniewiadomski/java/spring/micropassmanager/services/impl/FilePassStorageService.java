@@ -3,7 +3,7 @@ package eu.pawelniewiadomski.java.spring.micropassmanager.services.impl;
 import eu.pawelniewiadomski.java.spring.micropassmanager.data.PasswordData;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassStorageService;
 
-public class DefaultPassStorageService implements PassStorageService {
+public class FilePassStorageService implements PassStorageService {
 
   @Override
   public PasswordData readPassword(PasswordData passwordData) {

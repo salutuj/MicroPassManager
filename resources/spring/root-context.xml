@@ -16,7 +16,7 @@
   <bean id="defaultSessionService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultSessionService"/>
   
   <alias alias="storageService" name="defaultStorageService" />
-  <bean id="defaultStorageService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultPassStorageService"/>
+  <bean id="defaultStorageService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.FilePassStorageService"/>
   
 	<alias alias="passManagerService" name="defaultPassManagerService" />
 	<bean id="defaultPassManagerService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.DefaultPassManagerService">
