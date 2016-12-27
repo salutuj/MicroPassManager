@@ -8,13 +8,12 @@ import org.apache.commons.logging.LogFactory;
 import org.bouncycastle.crypto.DataLengthException;
 import org.bouncycastle.crypto.InvalidCipherTextException;
 
-import eu.pawelniewiadomski.java.spring.micropassmanager.data.Constants;
 import eu.pawelniewiadomski.java.spring.micropassmanager.data.PasswordData;
+import eu.pawelniewiadomski.java.spring.micropassmanager.data.UserData;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.CryptoService;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassManagerService;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.PassStorageService;
 import eu.pawelniewiadomski.java.spring.micropassmanager.services.SessionService;
-import eu.pawelniewiadomski.java.spring.micropassmanager.session.User;
 
 public class DefaultPassManagerService implements PassManagerService {
   protected static final Log LOG = LogFactory.getLog(DefaultPassManagerService.class);
@@ -25,11 +24,11 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void addPassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.get(Constants.USER))) {
+    if (verifyUser(passwordData.getUserData())) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
-        encryptedPassword.setUser(passwordData.getUser());
+        encryptedPassword.setUserData(passwordData.getUserData());
         encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
@@ -60,7 +59,7 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public PasswordData findPassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.get(Constants.USER))) {
+    if (verifyUser(passwordData.getUserData())) {
       try {
         PasswordData readPassword = storageService.readPassword(passwordData);
         if (readPassword != null) readPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
@@ -75,11 +74,11 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void updatePassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.get(Constants.USER))) {
+    if (verifyUser(passwordData.getUserData())) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
-        encryptedPassword.setUser(passwordData.getUser());
+        encryptedPassword.setUserData(passwordData.getUserData());
         encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
@@ -93,11 +92,11 @@ public class DefaultPassManagerService implements PassManagerService {
 
   @Override
   public void deletePassword(PasswordData passwordData) {
-    if (verifyUser(passwordData.get(Constants.USER))) {
+    if (verifyUser(passwordData.getUserData())) {
       try {
 
         PasswordData encryptedPassword = new PasswordData();
-        encryptedPassword.setUser(passwordData.getUser());
+        encryptedPassword.setUserData(passwordData.getUserData());
         encryptedPassword.setKey(passwordData.getKey());
         encryptedPassword.setPassword(cryptoService.encryptString(makeCipherKey(passwordData), passwordData.getPassword()));
         storageService.storePassword(encryptedPassword);
@@ -110,14 +109,14 @@ public class DefaultPassManagerService implements PassManagerService {
   }
 
   private String makeCipherKey(PasswordData passwordData) {
-    User user = sessionService.getCurrentSession().getSessionUser();
-    return user.getId() + user.getMasterPassword() + passwordData.getKey();
+    UserData user = sessionService.getCurrentSession().getSessionUser();
+    return user.getUsername() + user.getPassword() + passwordData.getKey();
   }
 
-  private boolean verifyUser(String userId) {
-    User currentUser = sessionService.getCurrentSession().getSessionUser();
+  private boolean verifyUser(UserData userData) {
+    UserData currentUser = sessionService.getCurrentSession().getSessionUser();
     if (currentUser != null)
-      return !userId.equals(currentUser.getId());
+      return !userData.equals(currentUser);
     else throw new RuntimeException("No user defined for session");
 
   }

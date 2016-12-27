@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
 	xsi:schemaLocation="
     http://www.springframework.org/schema/beans     
     http://www.springframework.org/schema/beans/spring-beans.xsd
     http://www.springframework.org/schema/context 
     http://www.springframework.org/schema/context/spring-context.xsd    
+    http://www.springframework.org/schema/jdbc
+    http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
     ">
 	<context:property-placeholder location="classpath:config.properties" />
 
+  <jdbc:embedded-database id="embeddedHsqldbDataSource" type="HSQL" database-name="genealogia">
+    <jdbc:script location="classpath:hsqldb/init.sql" encoding="UTF-8" />    
+  </jdbc:embedded-database>
+  
   <alias alias="cryptoService" name="defaultCryptoService" />
   <bean id="defaultCryptoService" class="eu.pawelniewiadomski.java.spring.micropassmanager.services.impl.AESCBCBase64CryptoService"/>
   
@@ -24,6 +32,5 @@
 		<property name="sessionService" ref="sessionService" />
 		<property name="storageService" ref="storageService" />
 	</bean>
-
 
 </beans>

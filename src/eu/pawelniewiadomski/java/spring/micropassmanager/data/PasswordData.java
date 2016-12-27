@@ -1,27 +1,12 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.data;
 
-import java.util.HashMap;
-
-public class PasswordData extends HashMap<String, String>{
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -4671030661426781913L;
+public class PasswordData {
+  private String key;
+  private String login;
+  private String password;
+  private UserData userData;
+  private Object extra;
   
-  
-  String user;
-  String key;
-  String login;
-  String password;
-  
-  public String getUser() {
-    return user;
-  }
-
-  public void setUser(String user) {
-    this.user = user;
-  }
-
   public String getKey() {
     return key;
   }
@@ -29,11 +14,11 @@ public class PasswordData extends HashMap<String, String>{
   public void setKey(String key) {
     this.key = key;
   }
-  
+
   public String getLogin() {
     return login;
   }
-  
+
   public void setLogin(String login) {
     this.login = login;
   }
@@ -46,5 +31,33 @@ public class PasswordData extends HashMap<String, String>{
     this.password = password;
   }
 
+  /**
+   * @return the extra
+   */
+  public Object getExtra() {
+    return extra;
+  }
 
+  /**
+   * @param extra the extra to set
+   */
+  public void setExtra(Object extra) {
+    this.extra = extra;
+  }
+
+  /**
+   * @return the userData
+   */
+  public UserData getUserData() {
+    return userData;
+  }
+
+  /**
+   * @param userData the userData to set
+   */
+  public void setUserData(UserData userData) {
+    this.userData = userData;
+  }
+
+  
 }

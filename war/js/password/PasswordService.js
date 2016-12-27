@@ -1,16 +1,19 @@
 (function(){
   'use strict';
   angular.module('passwordModule').service('PasswordService', PasswordService);
-  PasswordService.$inject = ['$http', 'passwordWsUrl'];
-  function PasswordService($http, passwordWsUrl){
+  PasswordService.$inject = ['$filter', '$resource', 'passwordWsUrl'];
+  
+  function PasswordService($filter, $resource, passwordWsUrl){
+    // WS-DAO
+    var Password = $resource(passwordWsUrl, {}, {}, {     stripTrailingSlashes: false});
+    
+    
     this.storePassword = function(passwordData){
       var newPasswordData = {          
           'user': passwordData.user,
           'service' : passwordData.services[0],
       }
-      return $http.post(passwordWsUrl, newPasswordData).then(function(result){
-        return result.data; //.data;
-      });
+      return Password.save( {passwordData : $filter('json')(newPasswordData,0) } );
     }
     
     this.readPassword = function(passwordData){
@@ -23,9 +26,7 @@
           'Accept' : 'application/json;charset=utf-8'
         }
       }
-      return $http.get(passwordWsUrl, config).then(function(result){
-        return result.data;
-      });
+      return Password.get(config);
     }
     
     this.updatePassword = function(passwordData){
@@ -33,9 +34,7 @@
           'user': passwordData.user,
           'service' : passwordData.services[0],
       }
-      return $http.put(passwordWsUrl, newPasswordData).then(function(result){
-        return result; //.data;
-      });
+      return Password.put(newPasswordData);
     }
     
     this.removePassword = function(passwordData){
@@ -43,9 +42,7 @@
           'user': passwordData.user,
           'service.name' : passwordData.services[0].name,
       }
-      return $http.delete(passwordWsUrl, newPasswordData).then(function(result){
-        return result; //.data;
-      });
+      return Password.remove(newPasswordData);
     }
   }
 })()

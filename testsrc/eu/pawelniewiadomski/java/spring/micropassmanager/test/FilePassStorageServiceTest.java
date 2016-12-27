@@ -30,12 +30,12 @@ public class FilePassStorageServiceTest extends BaseTest {
   public void testCRUDcycle() {
     PasswordData readPasswordData = null;
     PasswordData originalPasswordData = new PasswordData();
-    originalPasswordData.setUser("pawel");
+    //originalPasswordData.setUser("pawel");
     originalPasswordData.setKey("BankAccount");
     originalPasswordData.setLogin("pawelsBankLogin");
     originalPasswordData.setPassword("encryptedPassword");
     PasswordData passwordMatcherData = new PasswordData();
-    passwordMatcherData.setUser("pawel");
+    //passwordMatcherData.setUser("pawel");
     passwordMatcherData.setKey("BankAccount");
     passwordMatcherData.setLogin("pawelsBankLogin");
 

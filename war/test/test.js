@@ -1,5 +1,5 @@
 (function(){
-  angular.module('ngMicroPassManagerTestApp', ['passwordModule']).   
+  angular.module('ngMicroPassManagerTestApp', ['ngResource', 'passwordModule']).   
   controller('defaultTestCtrl', ['$scope', 'PasswordService', function($scope, PasswordService){
     $scope.test = {
       'title' : "MicroPassManager test",
@@ -21,27 +21,19 @@
     };
        
     $scope.test.storePassword = function(passwordData){
-      return PasswordService.storePassword(passwordData).then(function(data){
-        $scope.test.result = data;
-      });
+      $scope.test.result = PasswordService.storePassword(passwordData);
     }
     
     $scope.test.readPassword = function(passwordData){
-      return PasswordService.readPassword(passwordData).then(function(data){
-        $scope.test.result = data;
-      });
+      $scope.test.result = PasswordService.readPassword(passwordData);
     }
     
     $scope.test.updatePassword = function(passwordData){
-      return PasswordService.updatePassword(passwordData).then(function(data){
-        $scope.test.result = data;
-      });
+      $scope.test.result = PasswordService.updatePassword(passwordData);
     }
     
     $scope.test.removePassword = function(passwordData){
-      return PasswordService.removePassword(passwordData).then(function(data){
-        $scope.test.result = data;
-      });
+      $scope.test.result =  PasswordService.removePassword(passwordData);
     }
   }]);
 })()

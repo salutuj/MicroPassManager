@@ -1,14 +1,16 @@
 package eu.pawelniewiadomski.java.spring.micropassmanager.session;
 
+import eu.pawelniewiadomski.java.spring.micropassmanager.data.UserData;
+
 public class Session {
 
-  private User sessionUser;
+  private UserData sessionUser;
 
-  public User getSessionUser() {
+  public UserData getSessionUser() {
     return sessionUser;
   }
 
-  public void setSessionUser(User sessionUser) {
+  public void setSessionUser(UserData sessionUser) {
     this.sessionUser = sessionUser;
   }
 }
